@@ -1,0 +1,1575 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Мой бережный планер ✨</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      /* Светлый минимализм: молочный, шалфейный, тёплый серый */
+      --bg: #F7F5F0;
+      --surface: #FFFFFF;
+      --surface-soft: #EFECE6;
+      --text: #2C302E;
+      --text-muted: #7A7F7B;
+      --primary: #6B8E78;
+      --primary-light: #E3ECE6;
+      --accent: #D4A373;
+      --border: rgba(44, 48, 46, 0.08);
+      --shadow: 0 10px 30px -5px rgba(44, 48, 46, 0.05), 0 4px 12px -2px rgba(44, 48, 46, 0.03);
+      --radius-lg: 24px;
+      --radius-md: 16px;
+      --radius-sm: 12px;
+    }
+
+    [data-theme="blush"] {
+      /* Нежная эстетика: пудровый, кремовый, лиловый */
+      --bg: #FDF8F7;
+      --surface: #FFFFFF;
+      --surface-soft: #F7ECE9;
+      --text: #3A2E32;
+      --text-muted: #8E7C81;
+      --primary: #C48B9F;
+      --primary-light: #F7E8EE;
+      --accent: #B39CD0;
+      --border: rgba(58, 46, 50, 0.08);
+      --shadow: 0 10px 30px -5px rgba(196, 139, 159, 0.1);
+    }
+
+    [data-theme="dark"] {
+      /* Тёмная тема: графитовый, мягкий шалфейный акцент */
+      --bg: #161817;
+      --surface: #202321;
+      --surface-soft: #2A2E2B;
+      --text: #ECEAE4;
+      --text-muted: #939995;
+      --primary: #84A992;
+      --primary-light: rgba(132, 169, 146, 0.16);
+      --accent: #E0B083;
+      --border: rgba(255, 255, 255, 0.07);
+      --shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      transition: background-color 0.35s ease, color 0.35s ease;
+      padding-bottom: 60px;
+    }
+
+    h1, h2, .serif-title {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+    }
+
+    /* Верхняя стеклянная шапка */
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 20px;
+      background: rgba(247, 245, 240, 0.82);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+    }
+    [data-theme="blush"] .topbar { background: rgba(253, 248, 247, 0.85); }
+    [data-theme="dark"] .topbar { background: rgba(22, 24, 23, 0.85); }
+
+    .icon-btn {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: var(--shadow);
+      transition: transform 0.15s ease, background 0.2s;
+      font-size: 18px;
+    }
+    .icon-btn:active { transform: scale(0.95); }
+
+    .topbar-title {
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .pomo-pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--primary-light);
+      color: var(--primary);
+      padding: 8px 14px;
+      border-radius: 99px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+    }
+
+    /* Боковое выдвижное меню (Drawer) */
+    .drawer-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.35);
+      backdrop-filter: blur(3px);
+      z-index: 90;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+    .drawer-backdrop.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .drawer {
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      width: 295px;
+      background: var(--surface);
+      z-index: 100;
+      transform: translateX(-100%);
+      transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+      padding: 24px 18px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-shadow: 12px 0 40px rgba(0,0,0,0.12);
+      overflow-y: auto;
+    }
+    .drawer.open { transform: translateX(0); }
+
+    .drawer-header {
+      padding: 6px 10px 20px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 14px;
+    }
+    .drawer-header h2 {
+      font-size: 26px;
+      margin-bottom: 4px;
+    }
+    .drawer-header p {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .nav-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 14px;
+      border-radius: 14px;
+      border: none;
+      background: transparent;
+      color: var(--text);
+      font-size: 14px;
+      font-weight: 500;
+      text-align: left;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: inherit;
+    }
+    .nav-item:hover { background: var(--surface-soft); }
+    .nav-item.active {
+      background: var(--primary-light);
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    .theme-switcher {
+      margin-top: 20px;
+      padding-top: 18px;
+      border-top: 1px solid var(--border);
+    }
+    .theme-dots {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .theme-btn {
+      flex: 1;
+      padding: 8px 6px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--surface-soft);
+      color: var(--text);
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .theme-btn.active {
+      border-color: var(--primary);
+      background: var(--primary-light);
+      color: var(--primary);
+    }
+
+    /* Контейнер экранов */
+    .container {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 18px 16px;
+    }
+
+    .view-section {
+      display: none;
+      animation: fadeIn 0.28s ease;
+    }
+    .view-section.active { display: block; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Эстетичный Pinterest-баннер режима дня */
+    .hero-card {
+      position: relative;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      min-height: 250px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 22px;
+      color: #FFFFFF;
+      box-shadow: 0 16px 36px -8px rgba(0, 0, 0, 0.18);
+      margin-bottom: 20px;
+      background-size: cover;
+      background-position: center;
+      transition: background-image 0.5s ease;
+    }
+    .hero-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(20, 22, 20, 0.28) 0%, rgba(20, 22, 20, 0.72) 100%);
+      z-index: 1;
+    }
+    .hero-content {
+      position: relative;
+      z-index: 2;
+    }
+
+    .mode-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin-bottom: 24px;
+    }
+    .mode-pill {
+      background: rgba(255, 255, 255, 0.22);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: 99px;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .mode-pill.active {
+      background: #FFFFFF;
+      color: #1F2421;
+      font-weight: 600;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    .hero-date {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      opacity: 0.9;
+      margin-bottom: 4px;
+    }
+    .hero-greeting {
+      font-size: 32px;
+      line-height: 1.15;
+      margin-bottom: 8px;
+    }
+    .hero-quote {
+      font-size: 13.5px;
+      opacity: 0.94;
+      max-width: 92%;
+    }
+
+    /* Карточки */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      margin-bottom: 16px;
+      box-shadow: var(--shadow);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+    .card-title {
+      font-size: 17px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .badge {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 99px;
+      background: var(--primary-light);
+      color: var(--primary);
+    }
+
+    /* Прогресс-бар */
+    .progress-wrap {
+      background: var(--surface-soft);
+      height: 10px;
+      border-radius: 99px;
+      overflow: hidden;
+      margin: 10px 0 6px;
+    }
+    .progress-fill {
+      background: var(--primary);
+      height: 100%;
+      border-radius: 99px;
+      transition: width 0.35s ease;
+    }
+
+    /* Списки задач */
+    .task-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 14px;
+      background: var(--surface-soft);
+      border-radius: var(--radius-sm);
+      margin-bottom: 8px;
+      transition: opacity 0.2s;
+    }
+    .task-item.done {
+      opacity: 0.6;
+    }
+    .task-item.done .task-text {
+      text-decoration: line-through;
+    }
+    .task-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex: 1;
+      cursor: pointer;
+    }
+    .checkbox {
+      width: 22px;
+      height: 22px;
+      border-radius: 7px;
+      border: 2px solid var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 13px;
+      flex-shrink: 0;
+      transition: background 0.2s;
+    }
+    .task-item.done .checkbox {
+      background: var(--primary);
+    }
+    .prio-tag {
+      font-size: 10px;
+      padding: 2px 7px;
+      border-radius: 6px;
+      background: rgba(212, 163, 115, 0.2);
+      color: var(--accent);
+      font-weight: 600;
+      margin-left: 6px;
+    }
+
+    /* Поля ввода и кнопки */
+    .input-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+    }
+    input[type="text"], input[type="number"], select, textarea {
+      width: 100%;
+      padding: 11px 14px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: var(--surface-soft);
+      color: var(--text);
+      font-family: inherit;
+      font-size: 14px;
+      outline: none;
+    }
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--primary);
+    }
+
+    .btn {
+      background: var(--primary);
+      color: #FFFFFF;
+      border: none;
+      padding: 11px 18px;
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.1s;
+      font-family: inherit;
+      white-space: nowrap;
+    }
+    .btn:active { transform: scale(0.98); }
+    .btn-soft {
+      background: var(--primary-light);
+      color: var(--primary);
+    }
+
+    /* Календарь */
+    .cal-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    .cal-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 6px;
+      text-align: center;
+    }
+    .cal-weekday {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      padding-bottom: 6px;
+    }
+    .cal-day {
+      aspect-ratio: 1;
+      border-radius: 12px;
+      background: var(--surface-soft);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      position: relative;
+      border: 2px solid transparent;
+      transition: all 0.15s;
+    }
+    .cal-day:hover { border-color: var(--primary); }
+    .cal-day.selected { border-color: var(--text); }
+    .cal-day-note {
+      font-size: 9px;
+      font-weight: 500;
+      max-width: 90%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      opacity: 0.85;
+    }
+
+    /* Цвета типов дней в календаре */
+    .day-study { background: #DCE8DF !important; color: #2B4734 !important; }
+    .day-work { background: #F3E3D3 !important; color: #5C3D22 !important; }
+    .day-both { background: #E6DFF0 !important; color: #403056 !important; }
+    .day-rest { background: #DDEBF2 !important; color: #264657 !important; }
+    .day-exam { background: #F7D9D9 !important; color: #6B2525 !important; }
+
+    /* Табы внутри разделов (Спорт, Учёба) */
+    .subtabs {
+      display: flex;
+      gap: 8px;
+      background: var(--surface-soft);
+      padding: 6px;
+      border-radius: 14px;
+      margin-bottom: 16px;
+    }
+    .subtab {
+      flex: 1;
+      padding: 9px 10px;
+      border-radius: 10px;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .subtab.active {
+      background: var(--surface);
+      color: var(--text);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+
+    /* 3 шага темы ЕГЭ */
+    .step-pills {
+      display: flex;
+      gap: 6px;
+    }
+    .step-pill {
+      font-size: 11px;
+      padding: 4px 8px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text-muted);
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .step-pill.done {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+
+    /* Заметки к книгам и в статистике */
+    .comment-box {
+      background: var(--surface-soft);
+      border-left: 3px solid var(--primary);
+      padding: 10px 12px;
+      border-radius: 0 10px 10px 0;
+      margin-top: 8px;
+      font-size: 13px;
+    }
+    .comment-meta {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-bottom: 3px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    @media (max-width: 480px) {
+      .grid-2 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Верхняя панель -->
+  <header class="topbar">
+    <button class="icon-btn" onclick="toggleDrawer()" title="Меню">☰</button>
+    <div class="topbar-title" id="currentViewTitle">Мой день</div>
+    <button class="pomo-pill" onclick="togglePomo()" id="pomoBtn">
+      <span>🍅</span> <span id="pomoTime">25:00</span>
+    </button>
+  </header>
+
+  <!-- Выдвижное боковое меню -->
+  <div class="drawer-backdrop" id="drawerBackdrop" onclick="toggleDrawer()"></div>
+  <aside class="drawer" id="drawer">
+    <div>
+      <div class="drawer-header">
+        <h2>Мой планер ✨</h2>
+        <p>Бережный ритм: учёба, смены и забота о себе</p>
+      </div>
+      <nav class="nav-list">
+        <button class="nav-item active" onclick="switchView('day', 'Мой день', this)">🌿 Мой день</button>
+        <button class="nav-item" onclick="switchView('calendar', 'Календарь (2026–2027)', this)">🗓 Календарь режимов</button>
+        <button class="nav-item" onclick="switchView('study', 'Учёба и ЕГЭ', this)">📚 Учёба и проекты</button>
+        <button class="nav-item" onclick="switchView('sport', 'Спорт и тело', this)">🧘‍♀️ Спорт и тело</button>
+        <button class="nav-item" onclick="switchView('habits', 'Привычки и режим', this)">✨ Привычки без вины</button>
+        <button class="nav-item" onclick="switchView('journal', 'Дневник и чтение', this)">📖 Книги и Дневник</button>
+        <button class="nav-item" onclick="switchView('stats', 'Статистика и итоги', this)">📊 Статистика и итоги</button>
+      </nav>
+    </div>
+
+    <div class="theme-switcher">
+      <div style="font-size: 12px; font-weight: 600; color: var(--text-muted);">Тема оформления</div>
+      <div class="theme-dots">
+        <button class="theme-btn active" onclick="setTheme('sage', this)">Шалфей</button>
+        <button class="theme-btn" onclick="setTheme('blush', this)">Пудра</button>
+        <button class="theme-btn" onclick="setTheme('dark', this)">Тёмная</button>
+      </div>
+    </div>
+  </aside>
+
+  <main class="container">
+
+    <!-- 1. ГЛАВНАЯ: МОЙ ДЕНЬ -->
+    <section id="view-day" class="view-section active">
+      <div class="hero-card" id="heroCard">
+        <div class="hero-content">
+          <div class="mode-pills">
+            <button class="mode-pill active" onclick="setDayMode('study', this)">🌿 Учёба</button>
+            <button class="mode-pill" onclick="setDayMode('work', this)">☕ Рабочая смена</button>
+            <button class="mode-pill" onclick="setDayMode('both', this)">✨ Смена + Учёба</button>
+            <button class="mode-pill" onclick="setDayMode('rest', this)">☁️ Выходной</button>
+          </div>
+        </div>
+        <div class="hero-content">
+          <div class="hero-date" id="heroDate">Сегодня • Твой ритм</div>
+          <h1 class="hero-greeting" id="heroGreeting">Спокойный фокус на учёбе</h1>
+          <p class="hero-quote" id="heroQuote">В дни учёбы главное — глубина, а не спешка. Делай перерывы и береги спину.</p>
+        </div>
+      </div>
+
+      <!-- Прогресс дня -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Прогресс за сегодня</div>
+          <span class="badge" id="dayProgressLabel">0% выполнено</span>
+        </div>
+        <div class="progress-wrap">
+          <div class="progress-fill" id="dayProgressBar" style="width: 0%;"></div>
+        </div>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px;">
+          <span style="font-size:12px; color:var(--text-muted);" id="modeNormHint">Норма дня адаптирована под режим «Учёба»</span>
+          <button class="btn-soft" style="padding:6px 12px; border-radius:8px; border:none; font-size:12px; font-weight:600; cursor:pointer;" onclick="eveningReview()">🌙 Вечерний разбор</button>
+        </div>
+      </div>
+
+      <!-- Задачи на сегодня -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Задачи и приоритеты</div>
+        </div>
+        <div id="tasksContainer"></div>
+        <div class="input-row">
+          <input type="text" id="newTaskInput" placeholder="Добавить дело на сегодня...">
+          <select id="newTaskPrio" style="width: 135px;">
+            <option value="high">🔥 Важное</option>
+            <option value="normal">Обычное</option>
+          </select>
+          <button class="btn" onclick="addTask()">+</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. КАЛЕНДАРЬ (2026 - СЕНТЯБРЬ 2027) -->
+    <section id="view-calendar" class="view-section">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Календарь режимов (2026 — Сентябрь 2027)</div>
+        </div>
+        <div class="cal-nav">
+          <button class="icon-btn" onclick="changeMonth(-1)">←</button>
+          <select id="calMonthSelect" onchange="jumpToMonth(this.value)" style="font-weight: 600; text-align: center;"></select>
+          <button class="icon-btn" onclick="changeMonth(1)">→</button>
+        </div>
+
+        <div class="cal-grid" id="calWeekdays">
+          <div class="cal-weekday">Пн</div><div class="cal-weekday">Вт</div><div class="cal-weekday">Ср</div>
+          <div class="cal-weekday">Чт</div><div class="cal-weekday">Пт</div><div class="cal-weekday">Сб</div><div class="cal-weekday">Вс</div>
+        </div>
+        <div class="cal-grid" id="calGrid"></div>
+      </div>
+
+      <!-- Редактор выбранного дня -->
+      <div class="card" id="calEditorCard">
+        <div class="card-header">
+          <div class="card-title" id="selectedDateTitle">Выбери день в календаре</div>
+        </div>
+        <div class="grid-2" style="margin-bottom: 10px;">
+          <select id="calDayType">
+            <option value="">Без цвета</option>
+            <option value="study">🌿 День учёбы (оливковый)</option>
+            <option value="work">☕ Рабочая смена (песочный)</option>
+            <option value="both">✨ Смена + Учёба (лавандовый)</option>
+            <option value="rest">☁️ Выходной (голубой)</option>
+            <option value="exam">🎯 Пробник / Дедлайн (пудрово-красный)</option>
+          </select>
+          <input type="text" id="calDayNote" placeholder="Короткая пометка (напр. Смена, Био)...">
+        </div>
+        <button class="btn" style="width:100%;" onclick="saveCalendarDay()">Сохранить отметку дня</button>
+      </div>
+    </section>
+
+    <!-- 3. УЧЁБА И ПРОЕКТЫ (ЕГЭ) -->
+    <section id="view-study" class="view-section">
+      <div class="subtabs">
+        <button class="subtab active" onclick="switchSubject('chem', this)">🧪 Химия ЕГЭ</button>
+        <button class="subtab" onclick="switchSubject('bio', this)">🧬 Биология ЕГЭ</button>
+        <button class="subtab" onclick="switchSubject('general', this)">📂 Другие проекты</button>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title" id="subjectTitle">Кодификатор и темы: Химия</div>
+          <span class="badge" id="subjectProgress">0% закрыто</span>
+        </div>
+        <p style="font-size:12px; color:var(--text-muted); margin-bottom:12px;">Отмечай шаги по каждой теме: Теория → Практика → Повторено</p>
+        <div id="topicsContainer"></div>
+        <div class="input-row">
+          <input type="text" id="newTopicInput" placeholder="Добавить тему или задачу...">
+          <button class="btn" onclick="addTopic()">Добавить</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">📈 Дневник пробников (баллы)</div>
+        </div>
+        <div id="mockScoresList" style="margin-bottom: 12px;"></div>
+        <div class="input-row">
+          <input type="number" id="mockScoreInput" placeholder="Балл (0–100)" min="0" max="100">
+          <input type="text" id="mockCommentInput" placeholder="Заметка (где были ошибки)...">
+          <button class="btn" onclick="addMockScore()">Записать</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. СПОРТ И ТЕЛО (3 РАЗДЕЛА: СПИНА, ДОРОЖКА, ТРЕНИРОВКА) -->
+    <section id="view-sport" class="view-section">
+      <div class="subtabs">
+        <button class="subtab active" onclick="switchSportTab('back', this)">1. Спина</button>
+        <button class="subtab" onclick="switchSportTab('treadmill', this)">2. Беговая дорожка</button>
+        <button class="subtab" onclick="switchSportTab('workout', this)">3. Тренировка</button>
+      </div>
+
+      <!-- Подраздел 1: Спина -->
+      <div id="sport-back" class="card">
+        <div class="card-header">
+          <div class="card-title">🧘‍♀️ Здоровая спина и осанка</div>
+          <span class="badge">Особенно важно после смен и учёбы</span>
+        </div>
+        <div class="grid-2">
+          <input type="number" id="backMin" placeholder="Сколько минут (напр. 15)">
+          <input type="text" id="backType" placeholder="Что делала (МФР, растяжка, грудной отдел)">
+        </div>
+        <div class="input-row">
+          <input type="text" id="backFeeling" placeholder="Ощущения в спине после занятия...">
+          <button class="btn" onclick="addSportLog('Спина')">Сохранить</button>
+        </div>
+      </div>
+
+      <!-- Подраздел 2: Беговая дорожка -->
+      <div id="sport-treadmill" class="card" style="display:none;">
+        <div class="card-header">
+          <div class="card-title">🏃‍♀️ Беговая дорожка</div>
+        </div>
+        <div class="grid-2" style="margin-bottom:8px;">
+          <input type="number" id="treadMin" placeholder="Время (минут)">
+          <input type="number" step="0.1" id="treadKm" placeholder="Дистанция (км)">
+        </div>
+        <div class="input-row">
+          <input type="text" id="treadMode" placeholder="Режим (быстрая ходьба в горку / бег / уклон)">
+          <button class="btn" onclick="addSportLog('Дорожка')">Сохранить</button>
+        </div>
+      </div>
+
+      <!-- Подраздел 3: Тренировка -->
+      <div id="sport-workout" class="card" style="display:none;">
+        <div class="card-header">
+          <div class="card-title">💪 Полноценная тренировка</div>
+        </div>
+        <div class="grid-2">
+          <input type="number" id="workMin" placeholder="Время (минут)">
+          <input type="text" id="workFocus" placeholder="Акцент (ноги, кор, всё тело, пилатес)">
+        </div>
+        <div class="input-row">
+          <input type="text" id="workNote" placeholder="Упражнения или самочувствие...">
+          <button class="btn" onclick="addSportLog('Тренировка')">Сохранить</button>
+        </div>
+      </div>
+
+      <!-- Журнал выполненных тренировок и заботы о теле -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">История активности</div>
+        </div>
+        <div id="sportLogsContainer"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">💧 Вода и сон сегодня</div>
+        </div>
+        <div class="grid-2">
+          <div style="background:var(--surface-soft); padding:14px; border-radius:14px; display:flex; justify-content:space-between; align-items:center;">
+            <span>Стаканов воды: <strong id="waterCount">0</strong>/8</span>
+            <button class="btn-soft" style="padding:6px 12px; border-radius:8px; border:none; cursor:pointer; font-weight:700;" onclick="addWater()">+ 💧</button>
+          </div>
+          <div style="background:var(--surface-soft); padding:14px; border-radius:14px; display:flex; justify-content:space-between; align-items:center;">
+            <span>Сон (часов):</span>
+            <input type="number" id="sleepInput" style="width:75px; padding:6px;" value="7.5" onchange="saveState()">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. ПРИВЫЧКИ БЕЗ НАКАЗАНИЯ -->
+    <section id="view-habits" class="view-section">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Бережные привычки</div>
+          <span class="badge">Без обнуления за пропуск</span>
+        </div>
+        <p style="font-size:13px; color:var(--text-muted); margin-bottom:14px;">Каждый отмеченный день идёт в твою копилку устойчивости. Пропуск — это просто день отдыха, а не провал.</p>
+        <div id="habitsContainer"></div>
+        <div class="input-row">
+          <input type="text" id="newHabitInput" placeholder="Новая привычка...">
+          <button class="btn" onclick="addHabit()">+</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. ДНЕВНИК И ЧТЕНИЕ (С КОММЕНТАРИЯМИ К КНИГАМ) -->
+    <section id="view-journal" class="view-section">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">📖 Мои книги и заметки по чтению</div>
+        </div>
+        <div id="booksContainer"></div>
+        <div style="margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border);">
+          <div style="font-size:13px; font-weight:600; margin-bottom:8px;">Добавить новую книгу</div>
+          <div class="input-row">
+            <input type="text" id="bookTitleInput" placeholder="Название книги и автор...">
+            <input type="number" id="bookPagesInput" placeholder="Всего стр." style="width:120px;">
+            <button class="btn" onclick="addBook()">+</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">🌙 Вечерняя рефлексия и свободный лист</div>
+        </div>
+        <div class="grid-2" style="margin-bottom:10px;">
+          <select id="journalMood">
+            <option value="✨ Наполненное">✨ Наполненное состояние</option>
+            <option value="🌿 Спокойное">🌿 Спокойное и ровное</option>
+            <option value="☕ Устала после смены">☕ Приятная усталость</option>
+            <option value="☁️ Нужен отдых">☁️ Нужен бережный отдых</option>
+          </select>
+          <input type="text" id="journalPraise" placeholder="За что я себя сегодня хвалю?">
+        </div>
+        <textarea id="journalFreeText" rows="3" placeholder="Свободный лист: мысли за день, идеи, чувства..."></textarea>
+        <button class="btn" style="margin-top:10px; width:100%;" onclick="addJournalEntry()">Сохранить запись дня</button>
+        <div id="journalEntriesList" style="margin-top:14px;"></div>
+      </div>
+    </section>
+
+    <!-- 7. СТАТИСТИКА И ИТОГИ (С ОТДЕЛОМ ДЛЯ КОММЕНТАРИЕВ) -->
+    <section id="view-stats" class="view-section">
+      <div class="grid-2">
+        <div class="card">
+          <div style="font-size:12px; color:var(--text-muted);">Выполнено задач</div>
+          <div style="font-size:28px; font-weight:700; color:var(--primary); margin-top:4px;" id="statTasksDone">0</div>
+        </div>
+        <div class="card">
+          <div style="font-size:12px; color:var(--text-muted);">Минут спорта и спины</div>
+          <div style="font-size:28px; font-weight:700; color:var(--primary); margin-top:4px;" id="statSportMin">0 мин</div>
+        </div>
+      </div>
+
+      <!-- Отдел для комментариев в статистике и итогах -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">📝 Комментарии к итогам и личные выводы</div>
+          <span class="badge">Рефлексия прогресса</span>
+        </div>
+        <p style="font-size:13px; color:var(--text-muted); margin-bottom:12px;">
+          Здесь можно записать выводы за неделю или месяц: как удаётся совмещать смены и ЕГЭ, что даёт энергию и за что стоит себя похвалить.
+        </p>
+        <div class="grid-2" style="margin-bottom:8px;">
+          <select id="statCommentCategory">
+            <option value="Итоги недели">📅 Итоги недели</option>
+            <option value="Итоги месяца">🌙 Итоги месяца</option>
+            <option value="Баланс смен и учёбы">⚖️ Баланс работы и ЕГЭ</option>
+            <option value="Самочувствие и спорт">🧘‍♀️ Тело, спина и спорт</option>
+          </select>
+          <input type="text" id="statCommentHeadline" placeholder="Главный вывод коротко...">
+        </div>
+        <textarea id="statCommentText" rows="3" placeholder="Развёрнутый комментарий по статистике и своему темпу..."></textarea>
+        <button class="btn" style="margin-top:10px; width:100%;" onclick="addStatComment()">Сохранить комментарий к итогам</button>
+
+        <div id="statCommentsContainer" style="margin-top:16px;"></div>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    // Эстетичные фоны в стиле Pinterest для каждого режима дня
+    const DAY_MODES = {
+      study: {
+        title: 'Спокойный фокус на учёбе',
+        quote: 'В дни учёбы главное — глубина, а не спешка. Делай перерывы и разминай спину.',
+        norm: 'Норма дня: 2–3 глубокие задачи по ЕГЭ + 15 мин для спины',
+        img: 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?auto=format&fit=crop&w=1000&q=80'
+      },
+      work: {
+        title: 'Бережный день рабочей смены',
+        quote: 'Сегодня ты много отдаёшь сил работе. Вечером — только тёплый душ, МФР для спины и отдых.',
+        norm: 'Норма дня снижена: 1 мини-дело + 5 страниц книги + разгрузка спины',
+        img: 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=1000&q=80'
+      },
+      both: {
+        title: 'Баланс: смена и немного учёбы',
+        quote: 'Не требуй от себя максимума в обоих делах сразу. Даже 25 минут конспекта — это победа.',
+        norm: 'Норма дня: смена + 1 короткий блок повторения + растяжка',
+        img: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1000&q=80'
+      },
+      rest: {
+        title: 'Чистый выходной без чувства вины',
+        quote: 'Отдых — это часть подготовки к высоким баллам. Выспись, погуляй и наполнись силами.',
+        norm: 'Норма дня: 0 обязательных задач. Только то, что радует душу и тело',
+        img: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1000&q=80'
+      }
+    };
+
+    // Список месяцев с Января 2026 по Сентябрь 2027
+    const CALENDAR_MONTHS = [];
+    const monthNames = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+    for (let y = 2026; y <= 2027; y++) {
+      let maxM = (y === 2027) ? 8 : 11; // До сентября 2027 включительно (индекс 8)
+      for (let m = 0; m <= maxM; m++) {
+        CALENDAR_MONTHS.push({ year: y, month: m, label: `${monthNames[m]} ${y}` });
+      }
+    }
+
+    // Состояние приложения
+    let state = JSON.parse(localStorage.getItem('gentle_planner_v3')) || {
+      theme: 'sage',
+      dayMode: 'study',
+      water: 3,
+      sleep: 7.5,
+      tasks: [
+        { id: 1, text: 'Повторить ОВР по химии (1 вариант)', prio: 'high', done: false },
+        { id: 2, text: 'Конспект по митозу и мейозу', prio: 'high', done: true },
+        { id: 3, text: 'Разминка для спины 15 минут', prio: 'normal', done: false }
+      ],
+      calendar: {
+        '2026-10-26': { type: 'study', note: 'Химия' },
+        '2026-10-27': { type: 'work', note: 'Смена' },
+        '2026-10-28': { type: 'both', note: 'Смена+Био' }
+      },
+      subjects: {
+        chem: [
+          { id: 1, title: 'Строение атома и периодический закон', s1: true, s2: true, s3: false },
+          { id: 2, title: 'Окислительно-восстановительные реакции', s1: true, s2: false, s3: false }
+        ],
+        bio: [
+          { id: 3, title: 'Цитология: строение клетки и органоиды', s1: true, s2: true, s3: true },
+          { id: 4, title: 'Генетика и законы Менделя', s1: true, s2: false, s3: false }
+        ],
+        general: [
+          { id: 5, title: 'Собрать план подготовки на месяц', s1: true, s2: true, s3: false }
+        ]
+      },
+      mockScores: [
+        { date: '20 окт', subj: 'Химия', score: 74, note: 'Внимательнее в 34 задаче' }
+      ],
+      sportLogs: [
+        { category: 'Спина', min: 15, detail: 'МФР роллом + грудной отдел — стало намного легче' },
+        { category: 'Дорожка', min: 30, detail: '3.2 км • Ходьба в горку (уклон 6%)' }
+      ],
+      habits: [
+        { id: 1, name: 'Утренняя разминка спины (5–10 мин)', count: 14, doneToday: true },
+        { id: 2, name: '20 тестов ЕГЭ без спешки', count: 19, doneToday: false },
+        { id: 3, name: 'Чтение перед сном вместо ленты', count: 11, doneToday: false }
+      ],
+      books: [
+        {
+          id: 1,
+          title: 'Атомные привычки — Джеймс Клир',
+          current: 120,
+          total: 300,
+          comments: [
+            { page: 85, date: '24 окт', text: 'Очень крутая мысль: мы не поднимаемся до уровня своих целей, а падаем до уровня своих систем.' }
+          ]
+        }
+      ],
+      journal: [],
+      statComments: [
+        {
+          date: '25 окт 2026',
+          cat: 'Баланс смен и учёбы',
+          head: 'Стало меньше тревоги за смены',
+          text: 'Когда перестала требовать от себя по 3 часа учёбы в день рабочей смены, продуктивность в выходные выросла почти вдвое.'
+        }
+      ]
+    };
+
+    let currentSubject = 'chem';
+    let currentCalIndex = 9; // Октябрь 2026 по умолчанию
+    let selectedCalKey = '2026-10-26';
+
+    function saveState() {
+      localStorage.setItem('gentle_planner_v3', JSON.stringify(state));
+      updateStats();
+    }
+
+    // Навигация и меню
+    function toggleDrawer() {
+      document.getElementById('drawer').classList.toggle('open');
+      document.getElementById('drawerBackdrop').classList.toggle('open');
+    }
+
+    function switchView(viewId, title, btn) {
+      document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
+      document.getElementById('view-' + viewId).classList.add('active');
+      document.getElementById('currentViewTitle').textContent = title;
+      document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+      toggleDrawer();
+    }
+
+    function setTheme(theme, btn) {
+      state.theme = theme;
+      document.documentElement.setAttribute('data-theme', theme === 'sage' ? '' : theme);
+      document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+      saveState();
+    }
+
+    // Главный баннер режима дня
+    function setDayMode(mode, btn) {
+      state.dayMode = mode;
+      const cfg = DAY_MODES[mode];
+      const hero = document.getElementById('heroCard');
+      hero.style.backgroundImage = `url('${cfg.img}')`;
+      document.getElementById('heroGreeting').textContent = cfg.title;
+      document.getElementById('heroQuote').textContent = cfg.quote;
+      document.getElementById('modeNormHint').textContent = cfg.norm;
+
+      document.querySelectorAll('.mode-pill').forEach(p => p.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+      saveState();
+    }
+
+    // Задачи на день
+    function renderTasks() {
+      const box = document.getElementById('tasksContainer');
+      box.innerHTML = '';
+      state.tasks.forEach(t => {
+        const div = document.createElement('div');
+        div.className = 'task-item' + (t.done ? ' done' : '');
+        div.innerHTML = `
+          <div class="task-left" onclick="toggleTask(${t.id})">
+            <div class="checkbox">${t.done ? '✓' : ''}</div>
+            <span class="task-text">${t.text}</span>
+            ${t.prio === 'high' ? '<span class="prio-tag">Приоритет</span>' : ''}
+          </div>
+          <button onclick="deleteTask(${t.id})" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:16px;">×</button>
+        `;
+        box.appendChild(div);
+      });
+      const total = state.tasks.length;
+      const done = state.tasks.filter(t => t.done).length;
+      const pct = total ? Math.round((done / total) * 100) : 0;
+      document.getElementById('dayProgressBar').style.width = pct + '%';
+      document.getElementById('dayProgressLabel').textContent = `${pct}% выполнено (${done}/${total})`;
+    }
+
+    function addTask() {
+      const inp = document.getElementById('newTaskInput');
+      const prio = document.getElementById('newTaskPrio').value;
+      if (!inp.value.trim()) return;
+      state.tasks.push({ id: Date.now(), text: inp.value.trim(), prio, done: false });
+      inp.value = '';
+      saveState();
+      renderTasks();
+    }
+
+    function toggleTask(id) {
+      const t = state.tasks.find(x => x.id === id);
+      if (t) t.done = !t.done;
+      saveState();
+      renderTasks();
+    }
+
+    function deleteTask(id) {
+      state.tasks = state.tasks.filter(x => x.id !== id);
+      saveState();
+      renderTasks();
+    }
+
+    function eveningReview() {
+      const undone = state.tasks.filter(t => !t.done);
+      if (undone.length === 0) {
+        alert('Все задачи на сегодня закрыты! Ты умница, время отдыхать 🌙');
+        return;
+      }
+      if (confirm(`Осталось невыполненных дел: ${undone.length}. Пометить их с бережным переносом на завтра, чтобы закрыть сегодняшний день без чувства вины?`)) {
+        undone.forEach(t => {
+          if (!t.text.includes('(перенесено)')) t.text += ' (перенесено)';
+        });
+        saveState();
+        renderTasks();
+      }
+    }
+
+    // КАЛЕНДАРЬ 2026 - СЕНТЯБРЬ 2027
+    function initCalendarSelect() {
+      const sel = document.getElementById('calMonthSelect');
+      sel.innerHTML = '';
+      CALENDAR_MONTHS.forEach((m, idx) => {
+        const opt = document.createElement('option');
+        opt.value = idx;
+        opt.textContent = m.label;
+        sel.appendChild(opt);
+      });
+      sel.value = currentCalIndex;
+    }
+
+    function changeMonth(delta) {
+      const next = currentCalIndex + delta;
+      if (next >= 0 && next < CALENDAR_MONTHS.length) {
+        currentCalIndex = next;
+        document.getElementById('calMonthSelect').value = currentCalIndex;
+        renderCalendar();
+      }
+    }
+
+    function jumpToMonth(idx) {
+      currentCalIndex = parseInt(idx, 10);
+      renderCalendar();
+    }
+
+    function renderCalendar() {
+      const { year, month } = CALENDAR_MONTHS[currentCalIndex];
+      const grid = document.getElementById('calGrid');
+      grid.innerHTML = '';
+
+      const firstDay = new Date(year, month, 1).getDay();
+      const offset = (firstDay === 0) ? 6 : firstDay - 1; // Пн = 0
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+      for (let i = 0; i < offset; i++) {
+        const empty = document.createElement('div');
+        grid.appendChild(empty);
+      }
+
+      for (let d = 1; d <= daysInMonth; d++) {
+        const mm = String(month + 1).padStart(2, '0');
+        const dd = String(d).padStart(2, '0');
+        const key = `${year}-${mm}-${dd}`;
+        const info = state.calendar[key] || {};
+
+        const cell = document.createElement('div');
+        cell.className = 'cal-day' + (info.type ? ` day-${info.type}` : '') + (selectedCalKey === key ? ' selected' : '');
+        cell.innerHTML = `
+          <span>${d}</span>
+          ${info.note ? `<span class="cal-day-note">${info.note}</span>` : ''}
+        `;
+        cell.onclick = () => selectCalendarDay(key, d, CALENDAR_MONTHS[currentCalIndex].label);
+        grid.appendChild(cell);
+      }
+    }
+
+    function selectCalendarDay(key, dayNum, monthLabel) {
+      selectedCalKey = key;
+      const info = state.calendar[key] || { type: '', note: '' };
+      document.getElementById('selectedDateTitle').textContent = `Настройка дня: ${dayNum} (${monthLabel})`;
+      document.getElementById('calDayType').value = info.type || '';
+      document.getElementById('calDayNote').value = info.note || '';
+      renderCalendar();
+    }
+
+    function saveCalendarDay() {
+      if (!selectedCalKey) return;
+      const type = document.getElementById('calDayType').value;
+      const note = document.getElementById('calDayNote').value.trim();
+      if (!type && !note) {
+        delete state.calendar[selectedCalKey];
+      } else {
+        state.calendar[selectedCalKey] = { type, note };
+      }
+      saveState();
+      renderCalendar();
+    }
+
+    // УЧЁБА И ЕГЭ
+    function switchSubject(subj, btn) {
+      currentSubject = subj;
+      document.querySelectorAll('#view-study .subtab').forEach(b => b.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+      const names = { chem: 'Химия ЕГЭ', bio: 'Биология ЕГЭ', general: 'Другие проекты' };
+      document.getElementById('subjectTitle').textContent = 'Темы и задачи: ' + names[subj];
+      renderTopics();
+    }
+
+    function renderTopics() {
+      const list = state.subjects[currentSubject] || [];
+      const box = document.getElementById('topicsContainer');
+      box.innerHTML = '';
+      let totalSteps = list.length * 3;
+      let doneSteps = 0;
+
+      list.forEach(item => {
+        if (item.s1) doneSteps++;
+        if (item.s2) doneSteps++;
+        if (item.s3) doneSteps++;
+
+        const row = document.createElement('div');
+        row.className = 'task-item';
+        row.style.flexDirection = 'column';
+        row.style.alignItems = 'flex-start';
+        row.style.gap = '8px';
+        row.innerHTML = `
+          <div style="font-weight:600; font-size:14px;">${item.title}</div>
+          <div class="step-pills">
+            <button class="step-pill ${item.s1 ? 'done' : ''}" onclick="toggleTopicStep(${item.id}, 's1')">1. Теория</button>
+            <button class="step-pill ${item.s2 ? 'done' : ''}" onclick="toggleTopicStep(${item.id}, 's2')">2. Практика</button>
+            <button class="step-pill ${item.s3 ? 'done' : ''}" onclick="toggleTopicStep(${item.id}, 's3')">3. Повторено</button>
+          </div>
+        `;
+        box.appendChild(row);
+      });
+
+      const pct = totalSteps ? Math.round((doneSteps / totalSteps) * 100) : 0;
+      document.getElementById('subjectProgress').textContent = `${pct}% освоено`;
+      renderMockScores();
+    }
+
+    function toggleTopicStep(id, step) {
+      const item = state.subjects[currentSubject].find(x => x.id === id);
+      if (item) item[step] = !item[step];
+      saveState();
+      renderTopics();
+    }
+
+    function addTopic() {
+      const inp = document.getElementById('newTopicInput');
+      if (!inp.value.trim()) return;
+      state.subjects[currentSubject].push({ id: Date.now(), title: inp.value.trim(), s1: false, s2: false, s3: false });
+      inp.value = '';
+      saveState();
+      renderTopics();
+    }
+
+    function renderMockScores() {
+      const box = document.getElementById('mockScoresList');
+      box.innerHTML = state.mockScores.map(m => `
+        <div class="comment-box">
+          <div class="comment-meta"><span>${m.subj} • ${m.date}</span><strong>${m.score} баллов</strong></div>
+          <div>${m.note}</div>
+        </div>
+      `).join('');
+    }
+
+    function addMockScore() {
+      const score = document.getElementById('mockScoreInput').value;
+      const note = document.getElementById('mockCommentInput').value.trim();
+      if (!score) return;
+      const names = { chem: 'Химия', bio: 'Биология', general: 'Пробник' };
+      state.mockScores.unshift({
+        date: new Date().toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' }),
+        subj: names[currentSubject],
+        score,
+        note: note || 'Без комментария'
+      });
+      document.getElementById('mockScoreInput').value = '';
+      document.getElementById('mockCommentInput').value = '';
+      saveState();
+      renderMockScores();
+    }
+
+    // СПОРТ: 1. СПИНА, 2. ДОРОЖКА, 3. ТРЕНИРОВКА
+    function switchSportTab(tab, btn) {
+      document.getElementById('sport-back').style.display = (tab === 'back') ? 'block' : 'none';
+      document.getElementById('sport-treadmill').style.display = (tab === 'treadmill') ? 'block' : 'none';
+      document.getElementById('sport-workout').style.display = (tab === 'workout') ? 'block' : 'none';
+      document.querySelectorAll('#view-sport .subtab').forEach(b => b.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+    }
+
+    function addSportLog(category) {
+      let min = 0, detail = '';
+      if (category === 'Спина') {
+        min = parseInt(document.getElementById('backMin').value) || 15;
+        const type = document.getElementById('backType').value.trim() || 'Разминка для спины';
+        const feel = document.getElementById('backFeeling').value.trim();
+        detail = type + (feel ? ` • ${feel}` : '');
+        document.getElementById('backMin').value = '';
+        document.getElementById('backType').value = '';
+        document.getElementById('backFeeling').value = '';
+      } else if (category === 'Дорожка') {
+        min = parseInt(document.getElementById('treadMin').value) || 20;
+        const km = document.getElementById('treadKm').value;
+        const mode = document.getElementById('treadMode').value.trim() || 'Ходьба/бег';
+        detail = `${km ? km + ' км • ' : ''}${mode}`;
+        document.getElementById('treadMin').value = '';
+        document.getElementById('treadKm').value = '';
+        document.getElementById('treadMode').value = '';
+      } else {
+        min = parseInt(document.getElementById('workMin').value) || 30;
+        const focus = document.getElementById('workFocus').value.trim() || 'Тренировка';
+        const note = document.getElementById('workNote').value.trim();
+        detail = focus + (note ? ` • ${note}` : '');
+        document.getElementById('workMin').value = '';
+        document.getElementById('workFocus').value = '';
+        document.getElementById('workNote').value = '';
+      }
+      state.sportLogs.unshift({ category, min, detail });
+      saveState();
+      renderSport();
+    }
+
+    function renderSport() {
+      document.getElementById('waterCount').textContent = state.water;
+      const box = document.getElementById('sportLogsContainer');
+      box.innerHTML = state.sportLogs.map(l => `
+        <div class="task-item">
+          <div>
+            <strong>${l.category}</strong> • <span style="color:var(--primary);font-weight:600;">${l.min} мин</span>
+            <div style="font-size:12px;color:var(--text-muted);">${l.detail}</div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function addWater() {
+      state.water = (state.water + 1) % 13;
+      saveState();
+      renderSport();
+    }
+
+    // ПРИВЫЧКИ
+    function renderHabits() {
+      const box = document.getElementById('habitsContainer');
+      box.innerHTML = '';
+      state.habits.forEach(h => {
+        const div = document.createElement('div');
+        div.className = 'task-item';
+        div.innerHTML = `
+          <div class="task-left" onclick="toggleHabit(${h.id})">
+            <div class="checkbox" style="${h.doneToday ? 'background:var(--primary);color:#fff;' : ''}">${h.doneToday ? '✓' : ''}</div>
+            <div>
+              <div style="font-weight:600;font-size:14px;">${h.name}</div>
+              <div style="font-size:11px;color:var(--text-muted);">Всего выполнено дней: ${h.count} 🌱</div>
+            </div>
+          </div>
+        `;
+        box.appendChild(div);
+      });
+    }
+
+    function toggleHabit(id) {
+      const h = state.habits.find(x => x.id === id);
+      if (h) {
+        h.doneToday = !h.doneToday;
+        h.count += h.doneToday ? 1 : -1;
+      }
+      saveState();
+      renderHabits();
+    }
+
+    function addHabit() {
+      const inp = document.getElementById('newHabitInput');
+      if (!inp.value.trim()) return;
+      state.habits.push({ id: Date.now(), name: inp.value.trim(), count: 0, doneToday: false });
+      inp.value = '';
+      saveState();
+      renderHabits();
+    }
+
+    // КНИГИ С КОММЕНТАРИЯМИ И ДНЕВНИК
+    function renderBooks() {
+      const box = document.getElementById('booksContainer');
+      box.innerHTML = '';
+      state.books.forEach(b => {
+        const pct = Math.min(100, Math.round((b.current / b.total) * 100));
+        const card = document.createElement('div');
+        card.style.padding = '14px';
+        card.style.background = 'var(--surface-soft)';
+        card.style.borderRadius = '16px';
+        card.style.marginBottom = '12px';
+
+        const commentsHtml = (b.comments || []).map(c => `
+          <div class="comment-box" style="background:var(--surface);">
+            <div class="comment-meta"><span>Стр. ${c.page}</span><span>${c.date}</span></div>
+            <div>${c.text}</div>
+          </div>
+        `).join('');
+
+        card.innerHTML = `
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <strong>${b.title}</strong>
+            <span class="badge">${b.current} / ${b.total} стр. (${pct}%)</span>
+          </div>
+          <div class="progress-wrap"><div class="progress-fill" style="width:${pct}%"></div></div>
+          <div class="input-row" style="margin-top:8px;">
+            <input type="number" placeholder="На какой стр. сейчас?" value="${b.current}" onchange="updateBookPage(${b.id}, this.value)" style="background:var(--surface);width:140px;">
+            <input type="text" id="bookNote-${b.id}" placeholder="Комментарий или цитата по книге..." style="background:var(--surface);">
+            <button class="btn" onclick="addBookComment(${b.id})">💬</button>
+          </div>
+          <div style="margin-top:8px;">${commentsHtml}</div>
+        `;
+        box.appendChild(card);
+      });
+    }
+
+    function updateBookPage(id, val) {
+      const b = state.books.find(x => x.id === id);
+      if (b) b.current = Math.min(b.total, Math.max(0, parseInt(val) || 0));
+      saveState();
+      renderBooks();
+    }
+
+    function addBookComment(id) {
+      const b = state.books.find(x => x.id === id);
+      const inp = document.getElementById('bookNote-' + id);
+      if (!b || !inp.value.trim()) return;
+      if (!b.comments) b.comments = [];
+      b.comments.unshift({
+        page: b.current,
+        date: new Date().toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' }),
+        text: inp.value.trim()
+      });
+      inp.value = '';
+      saveState();
+      renderBooks();
+    }
+
+    function addBook() {
+      const title = document.getElementById('bookTitleInput').value.trim();
+      const pages = parseInt(document.getElementById('bookPagesInput').value) || 250;
+      if (!title) return;
+      state.books.push({ id: Date.now(), title, current: 0, total: pages, comments: [] });
+      document.getElementById('bookTitleInput').value = '';
+      document.getElementById('bookPagesInput').value = '';
+      saveState();
+      renderBooks();
+    }
+
+    function addJournalEntry() {
+      const mood = document.getElementById('journalMood').value;
+      const praise = document.getElementById('journalPraise').value.trim();
+      const text = document.getElementById('journalFreeText').value.trim();
+      if (!praise && !text) return;
+      state.journal.unshift({
+        date: new Date().toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' }),
+        mood, praise, text
+      });
+      document.getElementById('journalPraise').value = '';
+      document.getElementById('journalFreeText').value = '';
+      saveState();
+      renderJournal();
+    }
+
+    function renderJournal() {
+      const box = document.getElementById('journalEntriesList');
+      box.innerHTML = state.journal.map(j => `
+        <div class="comment-box">
+          <div class="comment-meta"><span>${j.date}</span><span>${j.mood}</span></div>
+          ${j.praise ? `<div><strong>Похвала себе:</strong> ${j.praise}</div>` : ''}
+          ${j.text ? `<div style="margin-top:4px;">${j.text}</div>` : ''}
+        </div>
+      `).join('');
+    }
+
+    // СТАТИСТИКА И КОММЕНТАРИИ К ИТОГАМ
+    function updateStats() {
+      const done = state.tasks.filter(t => t.done).length;
+      const sportMin = state.sportLogs.reduce((acc, x) => acc + (parseInt(x.min) || 0), 0);
+      document.getElementById('statTasksDone').textContent = done;
+      document.getElementById('statSportMin').textContent = sportMin + ' мин';
+      renderStatComments();
+    }
+
+    function addStatComment() {
+      const cat = document.getElementById('statCommentCategory').value;
+      const head = document.getElementById('statCommentHeadline').value.trim();
+      const text = document.getElementById('statCommentText').value.trim();
+      if (!head && !text) return;
+      state.statComments.unshift({
+        date: new Date().toLocaleDateString('ru-RU', { day: 'numeric', month: 'short', year: 'numeric' }),
+        cat,
+        head: head || 'Заметка по итогам',
+        text
+      });
+      document.getElementById('statCommentHeadline').value = '';
+      document.getElementById('statCommentText').value = '';
+      saveState();
+    }
+
+    function renderStatComments() {
+      const box = document.getElementById('statCommentsContainer');
+      if (!box) return;
+      box.innerHTML = (state.statComments || []).map(c => `
+        <div class="comment-box">
+          <div class="comment-meta"><span>${c.cat}</span><span>${c.date}</span></div>
+          <div style="font-weight:700; margin-bottom:3px;">${c.head}</div>
+          <div>${c.text}</div>
+        </div>
+      `).join('');
+    }
+
+    // Таймер Помодоро
+    let pomoTimer = null;
+    let pomoSec = 25 * 60;
+    function togglePomo() {
+      if (pomoTimer) {
+        clearInterval(pomoTimer);
+        pomoTimer = null;
+      } else {
+        pomoTimer = setInterval(() => {
+          if (pomoSec > 0) {
+            pomoSec--;
+            const m = String(Math.floor(pomoSec / 60)).padStart(2, '0');
+            const s = String(pomoSec % 60).padStart(2, '0');
+            document.getElementById('pomoTime').textContent = `${m}:${s}`;
+          } else {
+            clearInterval(pomoTimer);
+            pomoTimer = null;
+            pomoSec = 25 * 60;
+            alert('25 минут фокуса прошли! Сделай перерыв и разомни спину 🌿');
+          }
+        }, 1000);
+      }
+    }
+
+    // Инициализация
+    window.addEventListener('DOMContentLoaded', () => {
+      setTheme(state.theme);
+      setDayMode(state.dayMode);
+      initCalendarSelect();
+      renderTasks();
+      renderCalendar();
+      renderTopics();
+      renderSport();
+      renderHabits();
+      renderBooks();
+      renderJournal();
+      updateStats();
+    });
+  </script>
+</body>
+</html>
